@@ -11,7 +11,7 @@ public class TicTacToe extends JPanel
     static JButton swap = new JButton();
     int turn = 0;//if this number is a even, then put a X. If it's odd, then put an O
     private TextField tfCount;
-    private TextField tfTimer;
+    private static TextField tfTimer;
     static String currentMark = "X";
     static int interval;
     static Timer timer;
@@ -25,7 +25,7 @@ public class TicTacToe extends JPanel
       gameTimer();
     }
     
-    public void gameTimer(){
+    public static void gameTimer(){
     	
     String secs = "10";
     int delay = 1000;
@@ -39,7 +39,7 @@ public class TicTacToe extends JPanel
            int j=  setInterval();
             String time = Integer.toString(j);
             tfTimer.setText(time);
-           
+            System.out.println(interval);
         }
         
     }, delay, period);
@@ -48,9 +48,12 @@ public class TicTacToe extends JPanel
 }
 
 private static final int setInterval() {
-    if (interval == 1) 
-    	
-        timer.cancel();
+    if (interval == 1) {
+    	interval = 10;
+    	timer.cancel();
+    	swap.doClick();
+        gameTimer();
+    }
     return --interval;
 }
 
