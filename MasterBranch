@@ -18,13 +18,23 @@ public class TicTacToe extends JPanel {
     static int interval;
     static Timer timer;
     static boolean playerVSai = true; //Player vs player set this to false
+    
+    static enum aiDifficulty {
+    	easy,
+    	medium,
+    	hard
+    }
+    
+    aiDifficulty currentDifficulty;
 
     public TicTacToe() {
     	setLayout(new GridLayout(4,4));       
     	initializeboard(); 
     	gameTimer();
-    	if	(playerVSai)
+    	if	(playerVSai) {   
+    		currentDifficulty = aiDifficulty.hard;
     		swap.doClick();
+    	}
     }
 
     public static void gameTimer() {
@@ -114,13 +124,33 @@ public class TicTacToe extends JPanel {
                 JOptionPane.showConfirmDialog(null, "Game Over.");
                 resetGame();
             }
-            if (playerVSai && currentMark.equals("X"))
-            	AIPerformMove();
+            if (playerVSai && currentMark.equals("X")) {
+            	switch (currentDifficulty) {
+            		case easy:
+            			AIPerformEasyMove();
+            			break;
+            		case medium:
+            			AIPerformMediumMove();
+            			break;
+            		case hard:
+            			AIPerformHardMove();
+            			break;
+            	}
+            	AIPerformHardMove();
+            }
             turn++;
             interval = 10;
         }
         
-        public void AIPerformMove() {
+        public void AIPerformEasyMove() {
+        	
+        }
+        
+        public void AIPerformMediumMove() {
+        	
+        }
+        
+        public void AIPerformHardMove() {
         	boolean winPossible = false;
         	int boardIndex = -1;
         	//First Row to stop win
@@ -294,13 +324,6 @@ public class TicTacToe extends JPanel {
         		board[5].doClick();
         	else if (board[7].getText() == "")
         		board[7].doClick();
-        	
-        	/*for (JButton b : board) {
-        		if (b.getText() == "") {
-        			b.doClick();
-        			break;
-        		}
-        	}*/
         }
 
         public void changePlayer() {
