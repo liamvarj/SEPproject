@@ -25,7 +25,7 @@ public class TicTacToe extends JPanel {
     	hard
     }
     
-    aiDifficulty currentDifficulty;
+    static aiDifficulty currentDifficulty;
 
     public TicTacToe() {
     	setLayout(new GridLayout(4,4));       
@@ -136,7 +136,6 @@ public class TicTacToe extends JPanel {
             			AIPerformHardMove();
             			break;
             	}
-            	AIPerformHardMove();
             }
             turn++;
             interval = 10;
