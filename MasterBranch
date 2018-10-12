@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.util.*;
+import java.util.List;
 import java.util.Timer;
 
 
@@ -32,7 +33,7 @@ public class TicTacToe extends JPanel {
     	initializeboard(); 
     	gameTimer();
     	if	(playerVSai) {   
-    		currentDifficulty = aiDifficulty.hard;
+    		currentDifficulty = aiDifficulty.medium;
     		swap.doClick();
     	}
     }
@@ -42,14 +43,12 @@ public class TicTacToe extends JPanel {
 	    int delay = 1000;
 	    int period = 1000;
 	    timer = new Timer();
-	    interval = Integer.parseInt(secs);
-	    System.out.println(secs);	
+	    interval = Integer.parseInt(secs);	
 	    timer.scheduleAtFixedRate(new TimerTask() {
 	        public void run() {
 	        	int j=  setInterval();
 	            String time = Integer.toString(j);
 	            tfTimer.setText(time);
-	            System.out.println(interval);
 	        }
 	    }, delay, period);	
 	}
@@ -61,18 +60,6 @@ public class TicTacToe extends JPanel {
 	    }
 	    return --interval;
 	}
-
-   /* public void timer(){
-        TimerTask repeatedTask = new TimerTask() {
-            public void run() {
-                turn++;
-            }
-        };
-        Timer timer = new Timer("Timer");     
-        long delay  = 1000L;
-        long period = 1000L;
-        timer.scheduleAtFixedRate(repeatedTask, delay, period);
-    }*/
 
     public void initializeboard() {
         for(int i = 0; i <= 8; i++) {
@@ -92,14 +79,14 @@ public class TicTacToe extends JPanel {
         swap = new JButton();
         swap.setText("Swap");
         swap.addActionListener(new boardListener());
-        add(swap); 
+        //add(swap); 
     }
     
     public void resetGame() {
         for(int i = 0; i <= 8; i++) {
             board[i].setText("");
         }
-        if (playerVSai)
+        if (playerVSai && currentMark.equals("O"))
         	swap.doClick();
     }
 
@@ -110,7 +97,6 @@ public class TicTacToe extends JPanel {
     private class boardListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             currentMark = tfCount.getText();
-            //System.out.println(currentMark);
             JButton buttonClicked = (JButton)e.getSource(); //get the particular button that was clicked
             if(currentMark.equals("X")) {
                 buttonClicked.setText("X");
@@ -142,11 +128,24 @@ public class TicTacToe extends JPanel {
         }
         
         public void AIPerformEasyMove() {
+        	List<Integer> openSpots = new ArrayList<Integer>();
+        	for (int i = 0; i < 9; i++) {
+        		if (board[i].getText() == "")
+        			openSpots.add(i);
+        	}
         	
+        	Random rnd = new Random();
+        	int index = rnd.nextInt(openSpots.size());
+        	board[openSpots.get(index)].doClick();
         }
         
         public void AIPerformMediumMove() {
-        	
+        	Random rnd = new Random();
+        	int value = rnd.nextInt(100) + 1; //+ 1 because nextInt is from 0 - 99. now it is 1 - 100
+        	if (value <= 50)
+        		AIPerformEasyMove();
+        	else
+        		AIPerformHardMove();
         }
         
         public void AIPerformHardMove() {
@@ -382,7 +381,6 @@ public class TicTacToe extends JPanel {
     		 if (!board[i].getText().equals("")) {
     			 marks++; 
     		 }
-    		 System.out.print(marks);
     	 }
     	 if (marks == 9 )
     		 return true;
