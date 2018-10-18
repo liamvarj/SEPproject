@@ -12,13 +12,16 @@ public class TicTacToe extends JPanel {
 
     JButton board[] = new JButton[9]; 
     static JButton swap = new JButton();
+    static JButton undo = new JButton();
     int turn = 0;//if this number is a even, then put a X. If it's odd, then put an O
     private TextField tfCount;
     private static TextField tfTimer;
     static String currentMark = "X";
     static int interval;
     static Timer timer;
-    static boolean playerVSai = true; //Player vs player set this to false
+    static boolean playerVSai = false; //Player vs player set this to false
+    static boolean practiceMode = true;
+    JButton[] buttons = new JButton[10];
     
     static enum aiDifficulty {
     	easy,
@@ -31,7 +34,8 @@ public class TicTacToe extends JPanel {
     public TicTacToe() {
     	setLayout(new GridLayout(4,4));       
     	initializeboard(); 
-    	gameTimer();
+    	if (practiceMode == false){
+    	gameTimer();}
     	if	(playerVSai) {   
     		currentDifficulty = aiDifficulty.medium;
     		swap.doClick();
@@ -61,35 +65,58 @@ public class TicTacToe extends JPanel {
 	    return --interval;
 	}
 
+	
     public void initializeboard() {
         for(int i = 0; i <= 8; i++) {
-            board[i] = new JButton();
+            board[i] = new JButton("" + i);
             board[i].setText("");
             board[i].addActionListener(new boardListener());
             add(board[i]); //adds this button to JPanel (note: no need for JPanel.add(...)
             			   //because this whole class is a JPanel already           
-        }
+        } 
+        
         tfCount = new TextField("X"); // construct the TextField component with initial text
         tfCount.setEditable(false);       // set to read-only
         tfTimer = new TextField("0"); // construct the TextField component with initial text
         tfTimer.setEditable(false); 
-        JPanel p = new JPanel(new BorderLayout()); //PREFERRED!
+        
+        
+        if (practiceMode == true){
+                  
+             undo = new JButton();
+             undo.setText("undo");
+             undo.addActionListener(new undo());
+             add(undo); 
+        }
+        else{  
         add(tfCount);
-        add(tfTimer);
+        add(tfTimer);  
         swap = new JButton();
         swap.setText("Swap");
         swap.addActionListener(new boardListener());
         //add(swap); 
+        }
+        JPanel p = new JPanel(new BorderLayout()); //PREFERRED!  
     }
     
     public void resetGame() {
         for(int i = 0; i <= 8; i++) {
             board[i].setText("");
         }
+        turn = 0;
         if (playerVSai && currentMark.equals("O"))
         	swap.doClick();
     }
 
+    private class undo implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+        	JButton lastButton = buttons[turn-1]; 
+        	
+        	lastButton.setText("");
+        	turn--;
+        	
+        }
+        }
     //When a button is clicked, it generates an ActionEvent. Thus, each button needs an ActionListener. 
     //When it is clicked, it goes to this listener class that I have created and goes to the actionPerformed 
     //method. There (and in this class), we decide what we want to do.
@@ -98,18 +125,25 @@ public class TicTacToe extends JPanel {
         public void actionPerformed(ActionEvent e) {
             currentMark = tfCount.getText();
             JButton buttonClicked = (JButton)e.getSource(); //get the particular button that was clicked
+        buttons[turn] = buttonClicked;
+
             if(currentMark.equals("X")) {
                 buttonClicked.setText("X");
                 tfCount.setText("O");
+                turn++;
+                
             }
             else if (currentMark.equals("O")) {
                 buttonClicked.setText("O");
-                tfCount.setText("X");               
+                tfCount.setText("X");   
+                turn++;
+              
             }     
             if(checkForWin() == true) {
                 JOptionPane.showConfirmDialog(null, "Game Over.");
                 resetGame();
             }
+          
             if (playerVSai && currentMark.equals("X")) {
             	switch (currentDifficulty) {
             		case easy:
@@ -123,7 +157,7 @@ public class TicTacToe extends JPanel {
             			break;
             	}
             }
-            turn++;
+           
             interval = 10;
         }
         
