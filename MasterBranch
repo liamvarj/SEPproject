@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Timer;
 
 
+import java.io.*;
+import javax.sound.sampled.*;
+
 
 public class TicTacToe extends JPanel {
 
@@ -65,6 +68,23 @@ public class TicTacToe extends JPanel {
 	    return --interval;
 	}
 
+	
+	
+	public static void play(String filename)
+	{
+	    try
+	    {
+	        Clip clip = AudioSystem.getClip();
+	        clip.open(AudioSystem.getAudioInputStream(new File(filename)));
+	        clip.start();
+	    }
+	    catch (Exception exc)
+	    {
+	        exc.printStackTrace(System.out);
+	    }
+	}
+	
+	
 	
     public void initializeboard() {
         for(int i = 0; i <= 8; i++) {
@@ -140,7 +160,9 @@ public class TicTacToe extends JPanel {
               
             }     
             if(checkForWin() == true) {
+            	play("win.wav");
                 JOptionPane.showConfirmDialog(null, "Game Over.");
+                
                 resetGame();
             }
           
@@ -427,5 +449,6 @@ public class TicTacToe extends JPanel {
         window.getContentPane().add(new TicTacToe());
         window.setBounds(300,200,300,300);
         window.setVisible(true);
+       
     }
 }
