@@ -24,7 +24,7 @@ public class TicTacToe extends JPanel {
     static Timer timer;
     static boolean playerVSai = false; //Player vs player set this to false
     static boolean practiceMode = true;
-    JButton[] buttons = new JButton[10];
+    JButton[] buttons = new JButton[20];
     
     static enum aiDifficulty {
     	easy,
