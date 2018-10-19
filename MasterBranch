@@ -21,9 +21,9 @@ public class TicTacToe extends JPanel {
     private static TextField tfTimer;
     static String currentMark = "X";
     static int interval;
-    static Timer timer;
+    static Timer timer = new Timer();
     static boolean playerVSai = false; //Player vs player set this to false
-    static boolean practiceMode = true;
+    static boolean practiceMode = false;
     JButton[] buttons = new JButton[20];
     
     static enum aiDifficulty {
@@ -35,14 +35,78 @@ public class TicTacToe extends JPanel {
     static aiDifficulty currentDifficulty;
 
     public TicTacToe() {
+    	Menu();
+    }
+    
+    public void Menu() {
+    	currentMark = "X";
+    	removeAll();
+    	setLayout(new GridLayout(5, 1));
+    	JButton pvp = new JButton("Player VS Player");
+    	pvp.addActionListener(new ActionListener() { 
+    		public void actionPerformed(ActionEvent e) { 
+    			playerVSai = false;
+    			practiceMode = false;
+    			Setup();
+    		} 
+    	});
+    	add(pvp);
+    	JButton pvae = new JButton("AI Easy");
+    	pvae.addActionListener(new ActionListener() { 
+    		public void actionPerformed(ActionEvent e) { 
+    			playerVSai = true;
+    			currentDifficulty = aiDifficulty.easy;
+    			practiceMode = false;
+    			Setup();
+    		} 
+    	});
+    	add(pvae);
+    	JButton pvam = new JButton("AI Medium");
+    	pvam.addActionListener(new ActionListener() { 
+    		public void actionPerformed(ActionEvent e) { 
+    			playerVSai = true;
+    			currentDifficulty = aiDifficulty.medium;
+    			practiceMode = false;
+    			Setup();
+    		} 
+    	});
+    	add(pvam);
+    	JButton pvah = new JButton("AI Hard");
+    	pvah.addActionListener(new ActionListener() { 
+    		public void actionPerformed(ActionEvent e) { 
+    			playerVSai = true;
+    			currentDifficulty = aiDifficulty.hard;
+    			practiceMode = false;
+    			Setup();
+    		} 
+    	});
+    	add(pvah);
+    	JButton t = new JButton("Training");
+    	t.addActionListener(new ActionListener() { 
+    		public void actionPerformed(ActionEvent e) { 
+    			playerVSai = false;
+    			practiceMode = true;
+    			Setup();
+    		} 
+    	});
+    	add(t);
+    	validate();
+    	repaint();
+    }
+    
+    public void Setup() {
+    	removeAll();
+    	timer.cancel();
+    	turn = 0;
     	setLayout(new GridLayout(4,4));       
     	initializeboard(); 
     	if (practiceMode == false){
     	gameTimer();}
     	if	(playerVSai) {   
-    		currentDifficulty = aiDifficulty.medium;
     		swap.doClick();
     	}
+    	validate();
+    	repaint();
     }
 
     public static void gameTimer() {
@@ -87,6 +151,8 @@ public class TicTacToe extends JPanel {
 	
 	
     public void initializeboard() {
+        board = new JButton[9];
+        buttons = new JButton[20];
         for(int i = 0; i <= 8; i++) {
             board[i] = new JButton("" + i);
             board[i].setText("");
@@ -118,25 +184,17 @@ public class TicTacToe extends JPanel {
         }
         JPanel p = new JPanel(new BorderLayout()); //PREFERRED!  
     }
-    
-    public void resetGame() {
-        for(int i = 0; i <= 8; i++) {
-            board[i].setText("");
-        }
-        turn = 0;
-        if (playerVSai && currentMark.equals("O"))
-        	swap.doClick();
-    }
 
     private class undo implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-        	JButton lastButton = buttons[turn-1]; 
-        	
-        	lastButton.setText("");
-        	turn--;
+        	if (turn > 0) {        	
+        		JButton lastButton = buttons[turn-1]; 
+        		lastButton.setText("");
+        		turn--;
+        	}
         	
         }
-        }
+     }
     //When a button is clicked, it generates an ActionEvent. Thus, each button needs an ActionListener. 
     //When it is clicked, it goes to this listener class that I have created and goes to the actionPerformed 
     //method. There (and in this class), we decide what we want to do.
@@ -161,9 +219,13 @@ public class TicTacToe extends JPanel {
             }     
             if(checkForWin() == true) {
             	play("win.wav");
-                JOptionPane.showConfirmDialog(null, "Game Over.");
-                
-                resetGame();
+                int result = JOptionPane.showConfirmDialog(null, "Do you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                	Setup();
+                } else {
+                	Menu();
+                }
+                return;
             }
           
             if (playerVSai && currentMark.equals("X")) {
