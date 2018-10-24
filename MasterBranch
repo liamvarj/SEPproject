@@ -201,8 +201,11 @@ public class TicTacToe extends JPanel {
 
     private class boardListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            currentMark = tfCount.getText();
             JButton buttonClicked = (JButton)e.getSource(); //get the particular button that was clicked
+            if (buttonClicked.getText() != "" && buttonClicked.getText() != "Swap")
+            	return;
+        	
+            currentMark = tfCount.getText();
         buttons[turn] = buttonClicked;
 
             if(currentMark.equals("X")) {
@@ -219,6 +222,7 @@ public class TicTacToe extends JPanel {
             }     
             if(checkForWin() == true) {
             	play("win.wav");
+            	//timer.cancel();
                 int result = JOptionPane.showConfirmDialog(null, "Do you want to play again?", "Game Over", JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
                 	Setup();
